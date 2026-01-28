@@ -126,6 +126,12 @@ New-Item -ItemType Directory -Path $yasbDir -Force | Out-Null
 Copy-Item "$repoDir\config\yasb\*" -Destination $yasbDir -Force
 Write-Host "  [OK] Yasb config -> $yasbDir" -ForegroundColor Green
 
+# Wallpapers
+$wallpaperDir = "$userHome\iCloudDrive\Wallpapers\Themes\Monochrome"
+New-Item -ItemType Directory -Path $wallpaperDir -Force | Out-Null
+Copy-Item "$repoDir\wallpapers\*" -Destination $wallpaperDir -Force
+Write-Host "  [OK] Wallpapers -> $wallpaperDir" -ForegroundColor Green
+
 # AHK script
 $ahkDir = "$userHome\ahk"
 New-Item -ItemType Directory -Path $ahkDir -Force | Out-Null
