@@ -138,6 +138,12 @@ New-Item -ItemType Directory -Path $ahkDir -Force | Out-Null
 Copy-Item "$repoDir\ahk\komorebi.ahk" -Destination $ahkDir -Force
 Write-Host "  [OK] AHK script -> $ahkDir" -ForegroundColor Green
 
+# PowerShell profile
+$psProfileDir = Split-Path $PROFILE -Parent
+New-Item -ItemType Directory -Path $psProfileDir -Force | Out-Null
+Copy-Item "$repoDir\config\powershell\profile.ps1" -Destination $PROFILE -Force
+Write-Host "  [OK] PowerShell profile -> $PROFILE" -ForegroundColor Green
+
 # Copy AHK executable
 $ahkExe = "$ahkDir\AutoHotkey.exe"
 if (-not (Test-Path $ahkExe)) {
