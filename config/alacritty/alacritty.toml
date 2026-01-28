@@ -1,0 +1,99 @@
+# ALACRITTY - Windows 11 Monochrome Minimal
+# No title bar, clean look
+
+[window]
+decorations = "none"
+startup_mode = "Windowed"
+opacity = 1.0
+dynamic_padding = true
+
+[window.padding]
+x = 15
+y = 15
+
+[window.dimensions]
+columns = 120
+lines = 30
+
+[font]
+size = 14.0
+builtin_box_drawing = false
+
+[font.normal]
+family = "JetBrainsMono NF"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono NF"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono NF"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono NF"
+style = "Bold Italic"
+
+[font.offset]
+x = 0
+y = 1
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[cursor]
+blink_interval = 500
+unfocused_hollow = true
+
+[cursor.style]
+shape = "Block"
+blinking = "On"
+
+[selection]
+save_to_clipboard = true
+
+[colors.primary]
+background = "#18181B"
+foreground = "#E5E7EB"
+
+[colors.cursor]
+text = "#18181B"
+cursor = "#E5E7EB"
+
+[colors.selection]
+text = "#18181B"
+background = "#4B5563"
+
+[colors.normal]
+black   = "#18181B"
+red     = "#E5E7EB"
+green   = "#E5E7EB"
+yellow  = "#E5E7EB"
+blue    = "#E5E7EB"
+magenta = "#E5E7EB"
+cyan    = "#E5E7EB"
+white   = "#E5E7EB"
+
+[colors.bright]
+black   = "#4B565C"
+red     = "#E5E7EB"
+green   = "#E5E7EB"
+yellow  = "#E5E7EB"
+blue    = "#E5E7EB"
+magenta = "#E5E7EB"
+cyan    = "#E5E7EB"
+white   = "#E5E7EB"
+
+[keyboard]
+bindings = [
+  { key = "V", mods = "Control|Shift", action = "Paste" },
+  { key = "C", mods = "Control|Shift", action = "Copy" },
+  { key = "N", mods = "Control|Shift", action = "SpawnNewInstance" },
+  { key = "Return", mods = "Alt", action = "ToggleFullscreen" },
+]
+
+[terminal.shell]
+program = "wsl.exe"
+args = ["-d", "Ubuntu", "--cd", "~"]
