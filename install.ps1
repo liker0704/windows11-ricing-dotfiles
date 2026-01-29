@@ -231,7 +231,22 @@ Write-Host "  [OK] Win+L disabled (use Win+Alt+L to lock)" -ForegroundColor Gree
 $desktopPath = "HKCU:\Control Panel\Desktop"
 Set-ItemProperty -Path $desktopPath -Name "UserPreferencesMask" -Value ([byte[]](0x9F,0x1E,0x07,0x80,0x12,0x00,0x00,0x00))
 Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrkTimeout" -Value 100 -Type DWord
+Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrack" -Value 1 -Type DWord
 Write-Host "  [OK] X-Mouse enabled (focus follows mouse)" -ForegroundColor Green
+
+# Apply X-Mouse immediately via Windows API
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class XMouse {
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni);
+    public const uint SPI_SETACTIVEWINDOWTRACKING = 0x1001;
+    public const uint SPIF_SENDCHANGE = 0x02;
+}
+"@
+$enabled = $true
+[XMouse]::SystemParametersInfo([XMouse]::SPI_SETACTIVEWINDOWTRACKING, 0, [ref]$enabled, [XMouse]::SPIF_SENDCHANGE) | Out-Null
 
 # Enable Taskbar Auto-Hide (needed for full taskbar hiding with Windhawk)
 $stuckRectsPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
