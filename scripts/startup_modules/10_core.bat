@@ -3,7 +3,7 @@
 timeout /t 3 /nobreak >nul
 
 :: Activate X-Mouse (focus follows cursor)
-powershell -NoProfile -Command "Add-Type 'using System; using System.Runtime.InteropServices; public class X { [DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(uint a, uint b, ref bool c, uint d); }'; $e=$true; [X]::SystemParametersInfo(0x1001,0,[ref]$e,2)"
+powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\liker\scripts\activate_xmouse.ps1"
 
 :: Start komorebi
 "C:\Program Files\komorebi\bin\komorebic.exe" start
