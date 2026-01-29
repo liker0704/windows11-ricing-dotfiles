@@ -230,7 +230,7 @@ Write-Host "  [OK] Win+L disabled (use Win+Alt+L to lock)" -ForegroundColor Gree
 # Enable X-Mouse (focus follows mouse)
 $desktopPath = "HKCU:\Control Panel\Desktop"
 Set-ItemProperty -Path $desktopPath -Name "UserPreferencesMask" -Value ([byte[]](0x9F,0x1E,0x07,0x80,0x12,0x00,0x00,0x00))
-Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrkTimeout" -Value 100 -Type DWord
+Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrkTimeout" -Value 40 -Type DWord
 Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrack" -Value 1 -Type DWord
 Write-Host "  [OK] X-Mouse enabled (focus follows mouse)" -ForegroundColor Green
 
