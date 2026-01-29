@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Discord",
+    "identifier": {
+      "kind": "Exe",
+      "id": "Discord.exe"
+    },
+    "options": ["force"]
+  },
+  {
+    "name": "Spotify",
+    "identifier": {
+      "kind": "Exe",
+      "id": "Spotify.exe"
+    },
+    "options": ["force"]
+  },
+  {
+    "name": "Steam",
+    "identifier": {
+      "kind": "Exe",
+      "id": "steam.exe"
+    },
+    "options": ["force"]
+  },
+  {
+    "name": "Flow.Launcher",
+    "identifier": {
+      "kind": "Exe",
+      "id": "Flow.Launcher.exe"
+    },
+    "float_identifiers": [
+      {
+        "kind": "Exe",
+        "id": "Flow.Launcher.exe"
+      }
+    ]
+  }
+]

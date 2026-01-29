@@ -50,6 +50,7 @@ install.ps1 -Force       # Recreate scheduled task
 | Yasb | Status bar |
 | Flow Launcher | App launcher (like Rofi) |
 | Lightshot | Screenshot tool |
+| Windhawk | System-level taskbar customization |
 | JetBrainsMono NF | Nerd Font for terminal |
 
 ## Manual Install
@@ -63,6 +64,7 @@ winget install AutoHotkey.AutoHotkey
 winget install AmN.yasb
 winget install Flow-Launcher.Flow-Launcher
 winget install Skillbrains.Lightshot
+winget install Windhawk.Windhawk
 ```
 
 ### 2. Copy Configs
@@ -183,6 +185,38 @@ dotfiles-windows/
 ├── uninstall.ps1              # Clean uninstaller
 └── README.md
 ```
+
+## Windhawk Configuration (Manual)
+
+Windhawk mods must be configured manually after installation.
+
+### Required Mods
+
+Install these mods from Windhawk:
+1. **Windows 11 Taskbar Styler**
+2. **Taskbar height and icon size**
+3. **Windows 11 Start Menu Styler** (optional)
+4. **Windows 11 Notification Center Styler** (optional)
+
+### Hide Taskbar Completely
+
+To hide the native Windows taskbar (so only Yasb shows):
+
+1. **Taskbar height and icon size** → Settings:
+   - Set all height values to `0`
+
+2. **Windows 11 Taskbar Styler** → Add Control Styles:
+
+   | Target | Style |
+   |--------|-------|
+   | `Rectangle#BackgroundFill` | `Visibility=Collapsed` |
+   | `Rectangle#BackgroundStroke` | `Visibility=Collapsed` |
+
+3. **Windows Settings**:
+   - Right-click taskbar → Taskbar settings
+   - Enable "Automatically hide the taskbar"
+
+This makes the taskbar invisible even when pressing Win key.
 
 ## Uninstall
 

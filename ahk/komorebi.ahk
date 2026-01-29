@@ -2,8 +2,51 @@
 #SingleInstance Force
 SetControlDelay -1
 
-; Prevent Win key from opening Start Menu
-A_MenuMaskKey := "vkE8" 
+; ============== WIN+SPACE LANGUAGE SWITCH ==============
+; Циклическое переключение между ВСЕМИ языками
+#Space::
+{
+    ; Получить все раскладки
+    size := DllCall("GetKeyboardLayoutList", "UInt", 0, "Ptr", 0)
+    list := Buffer(A_PtrSize * size)
+    DllCall("GetKeyboardLayoutList", "UInt", size, "Ptr", list)
+
+    ; Получить текущую раскладку
+    hwnd := DllCall("GetForegroundWindow", "Ptr")
+    threadId := DllCall("GetWindowThreadProcessId", "Ptr", hwnd, "Ptr", 0, "UInt")
+    currentHKL := DllCall("GetKeyboardLayout", "UInt", threadId, "Ptr")
+
+    ; Найти следующую раскладку
+    nextHKL := NumGet(list, 0, "Ptr")  ; default to first
+    Loop size {
+        hkl := NumGet(list, A_PtrSize * (A_Index - 1), "Ptr")
+        if (hkl = currentHKL) {
+            nextIndex := Mod(A_Index, size)
+            nextHKL := NumGet(list, A_PtrSize * nextIndex, "Ptr")
+            break
+        }
+    }
+
+    ; Активировать
+    DllCall("ActivateKeyboardLayout", "Ptr", nextHKL, "UInt", 0)
+    PostMessage(0x50, 0, nextHKL,, "ahk_id " hwnd)
+
+    ; Показать
+    SetTimer () => ShowLang(), -50
+}
+
+ShowLang() {
+    hwnd := DllCall("GetForegroundWindow", "Ptr")
+    threadId := DllCall("GetWindowThreadProcessId", "Ptr", hwnd, "Ptr", 0, "UInt")
+    hkl := DllCall("GetKeyboardLayout", "UInt", threadId, "Ptr")
+    langId := hkl & 0xFFFF
+
+    langs := Map(0x0409, "🇺🇸 EN", 0x0419, "🇷🇺 RU", 0x0422, "🇺🇦 UK")
+    langName := langs.Has(langId) ? langs[langId] : Format("0x{:04X}", langId)
+    ToolTip(langName)
+    SetTimer () => ToolTip(), -800
+}
+; ========================================================
 
 GamingMode := false
 

@@ -30,7 +30,7 @@ $userHome = $env:USERPROFILE
 # STEP 1: Install Applications
 # ============================================================
 if (-not $SkipApps) {
-    Write-Host "`n[1/7] Installing Applications..." -ForegroundColor Yellow
+    Write-Host "`n[1/8] Installing Applications..." -ForegroundColor Yellow
 
     $apps = @(
         @{id="LGUG2Z.komorebi"; name="Komorebi"},
@@ -38,7 +38,8 @@ if (-not $SkipApps) {
         @{id="AutoHotkey.AutoHotkey"; name="AutoHotkey"},
         @{id="AmN.yasb"; name="Yasb"},
         @{id="Flow-Launcher.Flow-Launcher"; name="Flow Launcher"},
-        @{id="Skillbrains.Lightshot"; name="Lightshot"}
+        @{id="Skillbrains.Lightshot"; name="Lightshot"},
+        @{id="Windhawk.Windhawk"; name="Windhawk"}
     )
 
     foreach ($app in $apps) {
@@ -56,14 +57,14 @@ if (-not $SkipApps) {
         }
     }
 } else {
-    Write-Host "`n[1/7] Skipping app installation" -ForegroundColor Gray
+    Write-Host "`n[1/8] Skipping app installation" -ForegroundColor Gray
 }
 
 # ============================================================
 # STEP 2: Install Font (JetBrainsMono Nerd Font)
 # ============================================================
 if (-not $SkipFonts) {
-    Write-Host "`n[2/7] Installing JetBrainsMono Nerd Font..." -ForegroundColor Yellow
+    Write-Host "`n[2/8] Installing JetBrainsMono Nerd Font..." -ForegroundColor Yellow
 
     $fontName = "JetBrainsMono NF"
     $fontInstalled = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" |
@@ -100,13 +101,13 @@ if (-not $SkipFonts) {
         Write-Host "  [OK] Font installed" -ForegroundColor Green
     }
 } else {
-    Write-Host "`n[2/7] Skipping font installation" -ForegroundColor Gray
+    Write-Host "`n[2/8] Skipping font installation" -ForegroundColor Gray
 }
 
 # ============================================================
 # STEP 3: Copy Configs
 # ============================================================
-Write-Host "`n[3/7] Copying configs..." -ForegroundColor Yellow
+Write-Host "`n[3/8] Copying configs..." -ForegroundColor Yellow
 
 # Komorebi config
 $komorebiDir = "$userHome\.config\komorebi"
@@ -164,7 +165,7 @@ if (-not (Test-Path $ahkExe)) {
 # ============================================================
 # STEP 4: Copy Startup Scripts
 # ============================================================
-Write-Host "`n[4/7] Setting up startup scripts..." -ForegroundColor Yellow
+Write-Host "`n[4/8] Setting up startup scripts..." -ForegroundColor Yellow
 
 $scriptsDir = "$userHome\scripts"
 New-Item -ItemType Directory -Path "$scriptsDir\startup_modules" -Force | Out-Null
@@ -188,9 +189,37 @@ if ($yasbExe) {
 Write-Host "  [OK] Scripts -> $scriptsDir" -ForegroundColor Green
 
 # ============================================================
-# STEP 5: Registry Tweaks
+# STEP 5: Configure Monitors for Yasb
 # ============================================================
-Write-Host "`n[5/7] Applying registry tweaks..." -ForegroundColor Yellow
+Write-Host "`n[5/8] Configuring monitors..." -ForegroundColor Yellow
+
+# Yasb's windows_app_bar doesn't work correctly on primary monitor (Windows AppBar API limitation)
+# Detect monitors where WorkingArea equals full height (no taskbar space reserved)
+Add-Type -AssemblyName System.Windows.Forms
+$monitors = [System.Windows.Forms.Screen]::AllScreens
+$monitorsNeedingOffset = @()
+$monitorIndex = 0
+
+foreach ($monitor in $monitors) {
+    $needsOffset = $monitor.WorkingArea.Height -eq $monitor.Bounds.Height
+    $status = if ($needsOffset) { "needs offset" } else { "OK (Yasb app_bar working)" }
+    Write-Host "  Monitor $monitorIndex ($($monitor.DeviceName)): $status" -ForegroundColor $(if ($needsOffset) { "Yellow" } else { "Gray" })
+    if ($needsOffset) {
+        $monitorsNeedingOffset += $monitorIndex
+    }
+    $monitorIndex++
+}
+
+if ($monitorsNeedingOffset.Count -gt 0) {
+    Write-Host "  [INFO] Monitors $($monitorsNeedingOffset -join ', ') will get work_area_offset via startup script" -ForegroundColor Cyan
+} else {
+    Write-Host "  [OK] All monitors have proper work area reserved by Yasb" -ForegroundColor Green
+}
+
+# ============================================================
+# STEP 6: Registry Tweaks
+# ============================================================
+Write-Host "`n[6/8] Applying registry tweaks..." -ForegroundColor Yellow
 
 # Disable Win+L lock (so AHK can use it)
 $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
@@ -204,10 +233,44 @@ Set-ItemProperty -Path $desktopPath -Name "UserPreferencesMask" -Value ([byte[]]
 Set-ItemProperty -Path $desktopPath -Name "ActiveWndTrkTimeout" -Value 100 -Type DWord
 Write-Host "  [OK] X-Mouse enabled (focus follows mouse)" -ForegroundColor Green
 
+# Enable Taskbar Auto-Hide (needed for full taskbar hiding with Windhawk)
+$stuckRectsPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
+$stuckRectsValue = (Get-ItemProperty -Path $stuckRectsPath -ErrorAction SilentlyContinue).Settings
+if ($stuckRectsValue) {
+    $stuckRectsValue[8] = 0x03  # Enable auto-hide
+    Set-ItemProperty -Path $stuckRectsPath -Name "Settings" -Value $stuckRectsValue
+    Write-Host "  [OK] Taskbar auto-hide enabled" -ForegroundColor Green
+}
+
+# Configure Windhawk mods (if installed)
+$whModsPath = "HKLM:\SOFTWARE\Windhawk\Engine\Mods"
+if (Test-Path $whModsPath) {
+    # Taskbar icon size - set all to 0 for hidden taskbar
+    $iconSizePath = "$whModsPath\taskbar-icon-size\Settings"
+    if (Test-Path $iconSizePath) {
+        Set-ItemProperty -Path $iconSizePath -Name "TaskbarHeight" -Value 0
+        Set-ItemProperty -Path $iconSizePath -Name "IconSize" -Value 0
+        Set-ItemProperty -Path $iconSizePath -Name "TaskbarButtonWidth" -Value 0
+        Set-ItemProperty -Path $iconSizePath -Name "IconSizeSmall" -Value 0
+        Set-ItemProperty -Path $iconSizePath -Name "TaskbarButtonWidthSmall" -Value 0
+        Write-Host "  [OK] Windhawk taskbar-icon-size configured" -ForegroundColor Green
+    }
+
+    # Taskbar styler - hide background
+    $stylerPath = "$whModsPath\windows-11-taskbar-styler\Settings"
+    if (Test-Path $stylerPath) {
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].target" -Value "Rectangle#BackgroundFill"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].styles[0]" -Value "Visibility=Collapsed"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[1].target" -Value "Rectangle#BackgroundStroke"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[1].styles[0]" -Value "Visibility=Collapsed"
+        Write-Host "  [OK] Windhawk taskbar-styler configured" -ForegroundColor Green
+    }
+}
+
 # ============================================================
-# STEP 6: Create Scheduled Task
+# STEP 7: Create Scheduled Task
 # ============================================================
-Write-Host "`n[6/7] Creating startup task..." -ForegroundColor Yellow
+Write-Host "`n[7/8] Creating startup task..." -ForegroundColor Yellow
 
 $taskName = "KomorebiStartup"
 $taskExists = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
@@ -229,9 +292,9 @@ if ($taskExists -and -not $Force) {
 }
 
 # ============================================================
-# STEP 7: Done
+# STEP 8: Done
 # ============================================================
-Write-Host "`n[7/7] Finalizing..." -ForegroundColor Yellow
+Write-Host "`n[8/8] Finalizing..." -ForegroundColor Yellow
 
 Write-Host @"
 
