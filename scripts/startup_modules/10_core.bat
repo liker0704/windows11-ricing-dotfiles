@@ -1,6 +1,10 @@
 @echo off
-start "" /B "C:\Program Files\komorebi\bin\komorebic.exe" start
-timeout /t 3 /nobreak >nul
+:: Wait for system to be ready before starting komorebi
+timeout /t 5 /nobreak >nul
+
+:: Run komorebic directly (it handles its own process spawning and waits for startup)
+"C:\Program Files\komorebi\bin\komorebic.exe" start
+timeout /t 2 /nobreak >nul
 
 :: Auto-detect monitors that need work_area_offset (where Yasb's windows_app_bar doesn't work)
 :: This happens on primary monitor due to Windows AppBar API limitation
@@ -8,4 +12,4 @@ powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $i=
 
 "C:\Program Files\komorebi\bin\komorebic.exe" retile
 start "" /B "C:\Users\liker\ahk\AutoHotkey.exe" "C:\Users\liker\komorebi.ahk"
-start "" /B "C:\Program Files\Windhawk\windhawk.exe" -safe-mode
+:: Windhawk runs as Windows service - no need to start manually

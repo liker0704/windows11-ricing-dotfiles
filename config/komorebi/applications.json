@@ -1,39 +1,23 @@
-[
-  {
-    "name": "Discord",
-    "identifier": {
-      "kind": "Exe",
-      "id": "Discord.exe"
-    },
-    "options": ["force"]
+{
+  "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/master/schema.asc.json",
+  "Discord": {
+    "manage": [
+      { "kind": "Exe", "id": "Discord.exe" }
+    ]
   },
-  {
-    "name": "Spotify",
-    "identifier": {
-      "kind": "Exe",
-      "id": "Spotify.exe"
-    },
-    "options": ["force"]
+  "Spotify": {
+    "manage": [
+      { "kind": "Exe", "id": "Spotify.exe" }
+    ]
   },
-  {
-    "name": "Steam",
-    "identifier": {
-      "kind": "Exe",
-      "id": "steam.exe"
-    },
-    "options": ["force"]
+  "Steam": {
+    "manage": [
+      { "kind": "Exe", "id": "steam.exe" }
+    ]
   },
-  {
-    "name": "Flow.Launcher",
-    "identifier": {
-      "kind": "Exe",
-      "id": "Flow.Launcher.exe"
-    },
-    "float_identifiers": [
-      {
-        "kind": "Exe",
-        "id": "Flow.Launcher.exe"
-      }
+  "Flow.Launcher": {
+    "floating": [
+      { "kind": "Exe", "id": "Flow.Launcher.exe" }
     ]
   }
-]
+}

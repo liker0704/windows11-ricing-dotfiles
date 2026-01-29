@@ -271,13 +271,15 @@ if (Test-Path $whModsPath) {
         Write-Host "  [OK] Windhawk taskbar-icon-size configured" -ForegroundColor Green
     }
 
-    # Taskbar styler - hide background
+    # Taskbar styler - hide background completely
     $stylerPath = "$whModsPath\windows-11-taskbar-styler\Settings"
     if (Test-Path $stylerPath) {
-        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].target" -Value "Rectangle#BackgroundFill"
-        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].styles[0]" -Value "Visibility=Collapsed"
-        Set-ItemProperty -Path $stylerPath -Name "controlStyles[1].target" -Value "Rectangle#BackgroundStroke"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].target" -Value "Taskbar.TaskbarFrame#TaskbarFrame"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[0].styles[0]" -Value "MaxHeight=0"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[1].target" -Value "Rectangle#BackgroundFill"
         Set-ItemProperty -Path $stylerPath -Name "controlStyles[1].styles[0]" -Value "Visibility=Collapsed"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[2].target" -Value "Rectangle#BackgroundStroke"
+        Set-ItemProperty -Path $stylerPath -Name "controlStyles[2].styles[0]" -Value "Visibility=Collapsed"
         Write-Host "  [OK] Windhawk taskbar-styler configured" -ForegroundColor Green
     }
 }
