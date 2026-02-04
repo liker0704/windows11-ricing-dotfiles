@@ -50,6 +50,14 @@ ShowLang() {
 
 GamingMode := false
 
+; X-Mouse (focus follows cursor) control
+SetXMouse(enable) {
+    DllCall("user32.dll\SystemParametersInfo", "UInt", 0x1001, "UInt", 0, "Ptr", enable, "UInt", 2)
+}
+
+; Enable X-Mouse on startup
+SetXMouse(true)
+
 ; ==============================================================================
 ; GAMING MODE TOGGLE (WIN + SHIFT + G)
 ; ==============================================================================
@@ -59,12 +67,14 @@ GamingMode := false
     GamingMode := !GamingMode
     if (GamingMode) {
         Run("C:\Program Files\komorebi\bin\komorebic.exe toggle-pause",, "Hide")
-        ToolTip("Gaming Mode: ON")
-        SetTimer () => ToolTip(), -1000
+        SetXMouse(false)  ; Disable focus follows mouse
+        ToolTip("Gaming Mode: ON`nX-Mouse: OFF")
+        SetTimer () => ToolTip(), -1500
     } else {
         Run("C:\Program Files\komorebi\bin\komorebic.exe toggle-pause",, "Hide")
-        ToolTip("Gaming Mode: OFF")
-        SetTimer () => ToolTip(), -1000
+        SetXMouse(true)   ; Enable focus follows mouse
+        ToolTip("Gaming Mode: OFF`nX-Mouse: ON")
+        SetTimer () => ToolTip(), -1500
     }
 }
 
